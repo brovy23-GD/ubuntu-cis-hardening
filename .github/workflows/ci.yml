@@ -1,0 +1,23 @@
+﻿name: Ansible Lint & Test
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      
+      - name: Install dependencies
+        run: |
+          pip install ansible ansible-lint
+      
+      - name: Lint Ansible playbook
+        run: ansible-lint ansible/playbook.yml
+      
+      - name: Syntax check
+        run: ansible-playbook ansible/playbook.yml --syntax-check

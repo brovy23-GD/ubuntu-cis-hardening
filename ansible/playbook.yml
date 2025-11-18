@@ -1,0 +1,30 @@
+﻿---
+- name: Ubuntu CIS Hardening
+  hosts: all
+  become: yes
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Ensure SSH is configured securely
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^PermitRootLogin'
+        line: 'PermitRootLogin no'
+      notify: restart ssh
+
+    - name: Disable unused filesystems
+      copy:
+        dest: /etc/modprobe.d/cis.conf
+        content: |
+          install cramfs /bin/true
+          install freevxfs /bin/true
+          install jffs2 /bin/true
+
+  handlers:
+    - name: restart ssh
+      service:
+        name: ssh
+        state: restarted
