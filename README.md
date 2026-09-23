@@ -1,3 +1,5 @@
+![Ubuntu CIS Hardening Banner](uBUNTU%20gIT%20BANNER.png)
+
 # Ubuntu CIS Hardening
 
 **Ansible-based Ubuntu security-hardening exercise** by [Bobby Rovy](https://github.com/brovy23-GD) | [LinkedIn](https://www.linkedin.com/in/bobbyrovy)
