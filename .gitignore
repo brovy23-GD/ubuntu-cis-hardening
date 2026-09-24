@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.vs/
+.env
+.env.*
+!.env.example
+*.retry
+ansible/inventory.local.ini
+scans/output/
