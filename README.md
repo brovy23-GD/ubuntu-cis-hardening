@@ -4,39 +4,30 @@
 
 **Ansible-based Ubuntu security-hardening exercise** by [Bobby Rovy](https://github.com/brovy23-GD) | [LinkedIn](https://www.linkedin.com/in/bobbyrovy)
 
-## Overview
+## What this project does
 
-This repository demonstrates a small set of Ubuntu hardening tasks inspired by CIS guidance. It is a learning and portfolio project, **not a complete CIS Level 1 or Level 2 implementation or a verified compliance assessment**.
+The playbook refreshes the APT cache, sets `PermitRootLogin no` in the SSH configuration, and writes modprobe install overrides for `cramfs`, `freevxfs`, and `jffs2`. It creates `/etc/modprobe.d` if needed and sets the configuration file mode to `0644`.
 
-## Implemented in the repository
+This is a small exercise inspired by CIS guidance. It does not implement a complete CIS benchmark or establish compliance.
 
-- Refresh the APT package cache.
-- Set `PermitRootLogin no` in `/etc/ssh/sshd_config`, with an SSH service restart handler.
-- Write modprobe install overrides for `cramfs`, `freevxfs`, and `jffs2` to `/etc/modprobe.d/cis.conf`.
-- Provide an Ansible inventory template and a CI workflow with playbook lint and syntax-check steps.
+## Verified Ubuntu lab
 
-Source: [Ansible playbook](ansible/playbook.yml) | [Inventory](ansible/inventory.ini) | [CI workflow](.github/workflows/ci.yml)
+The playbook was applied in a disposable Ubuntu 22.04 Docker container. The lab checked SSH configuration syntax and the effective `permitrootlogin no` setting, verified the three modprobe lines and file mode, and confirmed that a second playbook run made no changes.
 
-## Limitations and current status
+From the repository root in PowerShell, with Docker Desktop running:
 
-The current [Python validation tests](tests/test_hardening.py) contain TODOs and `pass` statements. They **do not verify the host's security configuration**. The [scans directory](scans/) contains documentation, not evidence of completed OpenSCAP or Lynis scans. The repository does not establish comprehensive CIS compliance.
+```powershell
+docker run --rm -v "$((Get-Location).Path):/work:ro" ubuntu:22.04 bash /work/tests/lab.sh
+```
 
-The hardening playbook changes system-level SSH and module settings. Review it and verify recovery access before running against a real host; test on a disposable VM or lab environment first.
+The container lab sets `container_lab=true` to skip restarting SSH because it has no normal service manager. A regular Ubuntu server restart has not been verified by this lab.
 
-## Local lab usage
+## Automated checks
 
-1. Create a disposable Ubuntu VM and confirm console or alternate administrative access.
-2. Add the lab host to [`ansible/inventory.ini`](ansible/inventory.ini).
-3. Review the playbook's tasks and apply only settings that match your environment.
-4. Run `ansible-playbook -i ansible/inventory.ini ansible/playbook.yml --check --diff` to preview changes where supported.
-5. If appropriate for the lab, run `ansible-playbook -i ansible/inventory.ini ansible/playbook.yml`.
-6. Verify SSH access and configuration independently. **Do not rely on the placeholder Python tests as a security check.**
+GitHub Actions runs Ansible Lint, an Ansible syntax check, and the disposable Ubuntu lab test on pushes and pull requests. See [the workflow](.github/workflows/ci.yml) and [the lab script](tests/lab.sh).
 
-## Development roadmap
+## Limits and next steps
 
-- Implement real host-state validation checks and corresponding meaningful tests.
-- Add safe rollback and environment-specific preflight checks.
-- Record reproducible scan outputs and map implemented settings to a specific benchmark version.
-- Expand hardening tasks only after lab testing.
+No real server deployment, kernel module runtime check, OpenSCAP or Lynis scan, or full CIS compliance assessment has been completed. Review the [hardening guide](docs/hardening-guide.md) before using the playbook on a separate lab host. The inventory contains no live servers.
 
 **Contact:** [LinkedIn](https://www.linkedin.com/in/bobbyrovy)
